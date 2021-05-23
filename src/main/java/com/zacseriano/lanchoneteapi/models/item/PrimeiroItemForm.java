@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
+import com.zacseriano.lanchoneteapi.models.produto.Produto;
+import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
+import com.zacseriano.lanchoneteapi.repositories.ItemRepository;
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
 
 /**
@@ -43,8 +47,19 @@ public class PrimeiroItemForm {
 	public void setClienteEmail(String clienteEmail) {
 		this.clienteEmail = clienteEmail;
 	}
-	public Pedido converter(ProdutoRepository produtoRepository) {
-		// TODO Auto-generated method stub
-		return null;
+	public Pedido converter(ProdutoRepository produtoRepository, ItemRepository itemRepository, ClienteRepository clienteRepository) {
+		Produto produto = produtoRepository.findById(produtoId);
+		
+		Item item = new Item(produto, quantidade);
+		item.defineValorItem();
+		itemRepository.save(item);
+		
+		Cliente cliente = clienteRepository.findByEmail(clienteEmail);
+		
+		Pedido pedido = new Pedido(cliente, item);
+		item.setPedido(pedido);
+		pedido.setValorTotal();
+		
+		return pedido;
 	}
 }

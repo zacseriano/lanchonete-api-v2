@@ -7,12 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 
@@ -22,14 +19,12 @@ import com.zacseriano.lanchoneteapi.models.produto.Produto;
  * específica de cada pedido que foi feito pela API
  */
 @Entity
-@Table(name="ITEM")
 
 public class Item implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Id	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
 	@NotNull(message="O nome não pode estar vazio.")
@@ -38,27 +33,14 @@ public class Item implements Serializable{
 	@NotNull(message="A quantidade não pode estar vazia.")
 	private BigDecimal quantidade;
 	
-	@NotNull(message="O valor do item não pode estar vazio.")
 	private BigDecimal valorItem;
 	
 	@ManyToOne
-	@JsonIgnore
-	@JoinColumn(name="PEDIDO_ID")
 	private Pedido pedido;
 	
 	public Item(){
 		
 	}
-
-	public Item(long id, Produto produto, @NotNull BigDecimal quantidade, @NotNull BigDecimal valorItem,
-			Pedido pedido) {
-		super();
-		this.id = id;
-		this.produto = produto;
-		this.quantidade = quantidade;
-		this.valorItem = valorItem;
-		this.pedido = pedido;
-	}  
 	
 	public Item(Produto produto, BigDecimal quantidade) {
 		this.produto = produto;
@@ -100,8 +82,8 @@ public class Item implements Serializable{
 	/**
 	 * Método que calcula o valor de cada Item, multiplicando a quantidade requisitada com o valor unitário de cada Produto
  	 */
-	public BigDecimal defineValorItem(Produto produto, BigDecimal quantidade) {//CALCULA O VALOR DO ITEM RECEBENDO UM PRODUTO E UMA QUANTIDADE
-		return produto.getValorUnitario().multiply(quantidade);
+	public void defineValorItem() {//CALCULA O VALOR DO ITEM RECEBENDO UM PRODUTO E UMA QUANTIDADE
+		this.valorItem = this.produto.getValorUnitario().multiply(this.quantidade);
 	}
 	
 	/**
@@ -113,4 +95,3 @@ public class Item implements Serializable{
 	}
 
 }
-

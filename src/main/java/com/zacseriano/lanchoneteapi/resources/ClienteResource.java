@@ -130,10 +130,10 @@ public class ClienteResource {
 	@PostMapping("/solicitarPedido")
 	@Transactional
 	public ResponseEntity<PedidoDto> iniciarPedido(@RequestBody @Valid PrimeiroItemForm form, UriComponentsBuilder uriBuilder) {
-		Pedido pedido = form.converter(produtoRepository);
+		Pedido pedido = form.converter(produtoRepository, itemRepository, clienteRepository);
 		pedidoRepository.save(pedido);
 		
-		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(pedido.getId()).toUri();
+		URI uri = uriBuilder.path("/gerenciarPedido/{id}").buildAndExpand(pedido.getId()).toUri();
 		return ResponseEntity.created(uri).body(new PedidoDto(pedido));
 		
 		

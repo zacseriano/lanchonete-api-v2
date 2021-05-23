@@ -38,7 +38,7 @@ public class Pedido implements Serializable{
 	@NotNull(message="Total não-calculado.")
 	private BigDecimal total;
 	
-	private Estado estado;
+	private Estado estado = Estado.EM_ANÁLISE;
 
 	public Pedido(){
 		
