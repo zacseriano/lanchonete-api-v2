@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.zacseriano.lanchoneteapi.models.produto.Categoria;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 
 public class ProdutoDtoGestor {
@@ -12,12 +13,14 @@ public class ProdutoDtoGestor {
 	private String nome;
 	private BigDecimal valor;
 	private BigDecimal estoque;
+	private Categoria categoria;
 	
 	public ProdutoDtoGestor(Produto produto) {	
 		this.id = produto.getProdutoId();
 		this.nome = produto.getNome();
 		this.valor = produto.getValorUnitario();
 		this.estoque = produto.getEstoque();
+		this.categoria = produto.getCategoria();
 	}
 	
 	public long getId() {
@@ -38,6 +41,14 @@ public class ProdutoDtoGestor {
 
 	public void setEstoque(BigDecimal estoqoue) {
 		this.estoque = estoqoue;
+	}
+	
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
 
 	public static List<ProdutoDtoGestor> converter(List<Produto> produtos) {

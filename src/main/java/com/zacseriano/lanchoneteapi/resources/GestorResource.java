@@ -2,6 +2,7 @@ package com.zacseriano.lanchoneteapi.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -17,16 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.zacseriano.lanchoneteapi.exceptions.PedidoInexistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.ProdutoExistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.ProdutoInexistenteException;
+import com.zacseriano.lanchoneteapi.models.pedido.AtualizacaoPedidoForm;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
-import com.zacseriano.lanchoneteapi.models.pedido.PedidoForm;
+import com.zacseriano.lanchoneteapi.models.produto.AtualizacaoProdutoForm;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
+import com.zacseriano.lanchoneteapi.resources.dto.PedidoDto;
 import com.zacseriano.lanchoneteapi.resources.dto.ProdutoDtoGestor;
 
 import io.swagger.annotations.ApiOperation;
@@ -82,9 +84,14 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Lista um produto, rastreado pelo id, para o gestor.")
 	@GetMapping("/gerenciarProduto/{id}")
-	public Produto listaProduto(@PathVariable(value="id")long id){
-		if (produtoRepository.findById(id) == null) throw new ProdutoInexistenteException();	
-		return produtoRepository.findById(id);
+	public ResponseEntity<ProdutoDtoGestor> listaProdutos(@PathVariable Long id) {
+
+		Optional<Produto> produto = produtoRepository.findById(id);
+		if (produto.isPresent()) {
+			return ResponseEntity.ok(new ProdutoDtoGestor(produto.get()));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 	
 	/**
@@ -102,7 +109,7 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Salva um produto único no banco de dados.")
 	@PostMapping("/gerenciarProduto")
-	public ResponseEntity<Produto> cadastraProduto(@RequestBody @Valid Produto produto) {
+	public ResponseEntity<ProdutoDtoGestor> cadastraProduto(@RequestBody @Valid Produto produto) {
 		
 		Produto consultaProduto = produtoRepository.findByNome(produto.getNome());
 		if (consultaProduto != null) throw new ProdutoExistenteException();			
@@ -111,7 +118,7 @@ public class GestorResource {
 		URI uri = UriComponentsBuilder.newInstance()
 			      .path("/gestor/gerenciarProduto/").query("{id}").buildAndExpand(produto.getProdutoId()).toUri();
 		
-		return ResponseEntity.created(uri).body(produto);		
+		return ResponseEntity.created(uri).body(new ProdutoDtoGestor(produto));		
 		
 	}
 	
@@ -147,12 +154,17 @@ public class GestorResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Atualiza um produto.")
-	@PutMapping("/gerenciarProduto")
-	public Produto atualizaProduto(@RequestBody @Valid Produto produto) {
-		if (produto == null) throw new ProdutoInexistenteException();
-		return produtoRepository.save(produto);
+	@PutMapping("/gerenciarProduto/{id}")
+	public ResponseEntity<ProdutoDtoGestor> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoProdutoForm form) {
+		Optional<Produto> optional = produtoRepository.findById(id);
+		if (optional.isPresent()) {
+			Produto produto = form.atualizar(id, produtoRepository);
+			return ResponseEntity.ok(new ProdutoDtoGestor(produto));
+			
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
-	
 	/**
 	 * Método que lista todos os pedidos existentes no repositório de Pedidos da API
 	 * 
@@ -167,8 +179,9 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Lista todos os pedidos existentes para o gestor.")
 	@GetMapping("/gerenciarPedido")
-	public List<Pedido> listaPedidos(){
-		return pedidoRepository.findAll();
+	public List<PedidoDto> listaPedidos(){
+		List<Pedido> pedidos = pedidoRepository.findAll();
+		return PedidoDto.converter(pedidos);
 	}
 	
 	/**
@@ -185,43 +198,16 @@ public class GestorResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Atualiza o estado de um pedido.")
-	@PutMapping("/gerenciarPedido")
-	public Pedido atualizaEstado(@RequestBody @Valid PedidoForm pedidoForm) {
+	@PutMapping("/gerenciarPedido/{id}")
+	public ResponseEntity<PedidoDto> atualizaEstado(@PathVariable Long id, @RequestBody @Valid AtualizacaoPedidoForm form) {
 		
-		Pedido pedido = pedidoRepository.findById(pedidoForm.getPedidoId());
-		if (pedido == null) throw new PedidoInexistenteException();	
+		Optional<Pedido> optional = pedidoRepository.findById(id);
+		if (optional.isPresent()) {
+			Pedido pedido = form.atualizar(id, pedidoRepository);
+			return ResponseEntity.ok(new PedidoDto(pedido));
+			
+		}
 		
-		
-		return pedidoRepository.saveAndFlush(pedido);
-	}
-	
-	/**
-	 * Método que recebe o ID de um pedido e atualiza o status do mesmo para "CANCELADO", por fim, atualiza
-	 * os novos valores do estoque de cada produto, que é ressarcido. Ocorre uma verificação, se o Pedido existe,
-	 * gerando uma possível possível exceção.
-	 * 
-	 * HTTP Status:
-	 * 
-	 * 200 - OK: Tudo ocorreu como esperado
-	 * 400 - Bad Request: A requisição não foi aceita, algum campo está faltando
-	 * 401 - Unauthorized: Chave da API inválida
-	 * 403 - Forbidden: A chave da API não tem permissão para fazer a requisição
-	 * 404 - Not Found: O recurso requisitado não existe
-	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
-	 */
-	@ApiOperation(value="Cancela um pedido.")
-	@PutMapping("/cancelarPedido")
-	public Pedido cancelarPedido(@RequestBody PedidoForm pedidoForm) {
-		
-		Pedido pedido = pedidoRepository.findById(pedidoForm.getPedidoId());
-		if (pedido == null) throw new PedidoInexistenteException();	
-		
-		Produto produto = new Produto();
-		
-		for(int i=0; i<pedido.getItem().size(); i++) {
-			produto = produtoRepository.findById(pedido.getItem().get(i).getProduto().getProdutoId());
-			produtoRepository.saveAndFlush(produto);
-		}		
-		return pedidoRepository.save(pedido);				
+		return ResponseEntity.notFound().build();
 	}	
 }

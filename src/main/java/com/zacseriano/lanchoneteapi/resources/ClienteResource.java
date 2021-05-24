@@ -87,11 +87,13 @@ public class ClienteResource {
 	 * 404 - Not Found: O recurso requisitado não existe
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
-	/*@ApiOperation(value="Lista os pedidos para o cliente.")
+	@ApiOperation(value="Lista todos os produtos para o cliente.")
 	@GetMapping("/consultarPedido")
-	public List<Pedido> listaPedidos(){
-		return pedidoRepository.findAll();
-	}*/
+	public List<PedidoDto> listaPedidos(){
+		List<Pedido> pedidos = pedidoRepository.findAll();
+		return PedidoDto.converter(pedidos);
+	}
+
 	
 	/**
 	 * Método que lista um pedido para o cliente.Ocorre uma verificação, se o Pedido existe,
@@ -105,13 +107,13 @@ public class ClienteResource {
 	 * 403 - Forbidden: A chave da API não tem permissão para fazer a requisição
 	 * 404 - Not Found: O recurso requisitado não existe
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
-	 *//*
+	 */
 	@ApiOperation(value="Lista um pedido para o cliente.")
 	@GetMapping("gerenciarPedido/{id}")
 	public Pedido listaPedido(@PathVariable(value="id")long id){
 		if (pedidoRepository.findById(id) == null) throw new PedidoInexistenteException();	
 		return pedidoRepository.findById(id);
-	}*/
+	}
 	
 	/**
 	 * Método que cria um pedido vinculado a um cliente, e faz a seleção do primeiro item desse pedido, contendo Id do produto e a 

@@ -30,7 +30,7 @@ public class Produto implements Serializable{
 	private String nome;
 	
 	@NotNull(message="A categoria não pode estar vazia.")
-	private String categoria;
+	private Categoria categoria;
 	
 	@NotNull(message="O estoque não pode estar vazio.")
 	private BigDecimal estoque;
@@ -60,12 +60,12 @@ public class Produto implements Serializable{
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-
-	public String getCategoria() {
+	
+	public Categoria getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(Categoria categoria) {
 		this.categoria = categoria;
 	}
 
