@@ -9,17 +9,10 @@ import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.ItemRepository;
+import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
 
-/**
- * Classe que é implementada com três campos, passando um valor que indica a quantidade do Produto, um Id de Produto
- * e um email de Cliente como informações no formulário utilizado no RequestBody dos seguintes 
- * métodos de endpoints:
- *   	- salvaPrimeiroItem() no /cliente/solicitarPedido
- *  	- salvaOutroItem() no /cliente/solicitarPedido
- */
-public class PrimeiroItemForm {
-	
+public class AdicionarItemForm {
 	@NotNull(message="A quantidade não pode estar vazia.")
 	private BigDecimal quantidade;
 	
@@ -47,8 +40,10 @@ public class PrimeiroItemForm {
 	public void setClienteEmail(String clienteEmail) {
 		this.clienteEmail = clienteEmail;
 	}
-	public Pedido converter(ProdutoRepository produtoRepository, ItemRepository itemRepository, ClienteRepository clienteRepository) {
-		Produto produto = produtoRepository.findById(produtoId);
+	public Pedido converter(ProdutoRepository produtoRepository, ItemRepository itemRepository, ClienteRepository clienteRepository,
+							PedidoRepository pedidoRepository) {
+		
+		Produto produto = produtoRepository.findById(produtoId);	
 		produto.diminuiEstoque(quantidade);
 		
 		Item item = new Item(produto, quantidade);
@@ -58,10 +53,11 @@ public class PrimeiroItemForm {
 		
 		Cliente cliente = clienteRepository.findByEmail(clienteEmail);
 		
-		Pedido pedido = new Pedido(cliente, item);
+		Pedido pedido = cliente.acharPedidoAberto();
+		pedido.addItem(item);
 		item.setPedido(pedido);
 		pedido.setValorTotal();
 		
 		return pedido;
-	}
+	} 
 }

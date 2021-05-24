@@ -40,7 +40,7 @@ public class ImplementsUserDetailsService implements UserDetailsService{
 		if(cliente == null && gestor == null){
 			throw new UsernameNotFoundException("Usuario não encontrado!");
 		} else if(cliente!=null) {
-			return new User(cliente.getUsername(), cliente.getPassword(), cliente.getAuthorities());
+			return null; //new User(cliente.getUsername(), cliente.getPassword(), cliente.getAuthorities());
 		} else {
 			return new User(gestor.getUsername(), gestor.getPassword(), gestor.getAuthorities());
 		}		

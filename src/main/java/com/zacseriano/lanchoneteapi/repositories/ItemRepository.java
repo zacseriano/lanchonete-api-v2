@@ -13,4 +13,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 	 * Método para procurar um Item pelo seu Id.
 	 */
 	Item findById(long id);
+	
 }

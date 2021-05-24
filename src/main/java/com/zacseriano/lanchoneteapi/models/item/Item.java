@@ -28,6 +28,7 @@ public class Item implements Serializable{
 	private long id;
 	
 	@NotNull(message="O nome não pode estar vazio.")
+	@ManyToOne
 	private Produto produto;
 	
 	@NotNull(message="A quantidade não pode estar vazia.")

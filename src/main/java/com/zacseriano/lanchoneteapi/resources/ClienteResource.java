@@ -22,8 +22,10 @@ import com.zacseriano.lanchoneteapi.exceptions.PedidoInexistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.ProdutoInexistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.SemEstoqueException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
+import com.zacseriano.lanchoneteapi.models.item.AdicionarItemForm;
 import com.zacseriano.lanchoneteapi.models.item.Item;
 import com.zacseriano.lanchoneteapi.models.item.PrimeiroItemForm;
+import com.zacseriano.lanchoneteapi.models.pedido.CancelarPedidoForm;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.pedido.PedidoForm;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
@@ -135,30 +137,6 @@ public class ClienteResource {
 		
 		URI uri = uriBuilder.path("/gerenciarPedido/{id}").buildAndExpand(pedido.getId()).toUri();
 		return ResponseEntity.created(uri).body(new PedidoDto(pedido));
-		
-		
-		/*
-		Produto produto = produtoRepository.findById(itemForm.getProdutoId());
-		
-		if (produto == null) throw new ProdutoInexistenteException();		
-		if (produto.verificarEstoque(itemForm.getQuantidade())) throw new SemEstoqueException();
-		
-		produto.diminuiEstoque(itemForm.getQuantidade());
-		produtoRepository.save(produto);
-			
-		Item item = new Item(produto, itemForm.getQuantidade());
-		item.setValorItem(item.defineValorItem(produto, item.getQuantidade()));
-		itemRepository.save(item);
-			
-		Cliente cliente = clienteRepository.findByEmail(itemForm.getClienteEmail());
-		if (cliente == null) throw new ClienteInexistenteException();
-		
-		Pedido pedido = new Pedido(cliente, item);
-		item.setPedido(pedido);
-			
-		pedido.setValorTotal();
-		pedido.setEstado("ANDAMENTO");
-		return pedidoRepository.save(pedido);*/
 				
 	}
 	
@@ -177,27 +155,16 @@ public class ClienteResource {
 	 * 404 - Not Found: O recurso requisitado não existe
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
-	/*@ApiOperation(value="Cria os itens seguintes do pedido em andamento solicitado pelo cliente.")
+	@ApiOperation(value="Cria os itens seguintes do pedido em andamento solicitado pelo cliente.")
 	@PutMapping("/solicitarPedido")
-	public Pedido salvaOutroItem(@RequestBody PrimeiroItemForm itemForm) {
+	@Transactional
+	public ResponseEntity<PedidoDto> adicionaItem(@RequestBody @Valid AdicionarItemForm form, UriComponentsBuilder uriBuilder) {
+		Pedido pedido = form.converter(produtoRepository, itemRepository, clienteRepository, pedidoRepository);
 		
-		Pedido pedido = pedidoRepository.findByEstado("ANDAMENTO");
-		if (pedidoRepository.findByEstado("ANDAMENTO") == null) throw new PedidoInexistenteException();	
-		
-		Produto produto = produtoRepository.findById(itemForm.getProdutoId());
-		if (produto == null) throw new ProdutoInexistenteException();		
-		if (produto.verificarEstoque(itemForm.getQuantidade())) throw new SemEstoqueException();
-		produto.diminuiEstoque(itemForm.getQuantidade());
-		produtoRepository.save(produto);
-		
-		Item item = new Item(produto, itemForm.getQuantidade());
-		item.setValorItem(item.defineValorItem(produto, item.getQuantidade()));
-		itemRepository.save(item);
-		
-		pedido.addItem(item);
-		pedido.setValorTotal();
-		return pedidoRepository.save(pedido);	
-	}*/	
+		URI uri = uriBuilder.path("/gerenciarPedido/{id}").buildAndExpand(pedido.getId()).toUri();
+		return ResponseEntity.created(uri).body(new PedidoDto(pedido));
+			
+	}
 	
 	/**
 	 * Método que recebe o ID de um pedido e atualiza o status do mesmo para "CANCELADO", por fim, atualiza
@@ -213,24 +180,16 @@ public class ClienteResource {
 	 * 404 - Not Found: O recurso requisitado não existe
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
-	/*
+	
 	@ApiOperation(value="Cancela o pedido em andamento do cliente.")
 	@PutMapping("/gerenciarPedido")
-		public Pedido cancelarPedidoCliente(@RequestBody PedidoForm pedidoForm) {
+	@Transactional
+	public ResponseEntity<PedidoDto> cancelaPedido(@RequestBody @Valid CancelarPedidoForm form, UriComponentsBuilder uriBuilder) {
+		Pedido pedido = form.converter(clienteRepository, pedidoRepository);
 		
-			Pedido pedido = pedidoRepository.findById(pedidoForm.getPedidoId());
-			if (pedido == null) throw new PedidoInexistenteException();	
+		URI uri = uriBuilder.path("/gerenciarPedido/{id}").buildAndExpand(pedido.getId()).toUri();
+		return ResponseEntity.created(uri).body(new PedidoDto(pedido));
 			
-			Produto produto = null;
-			pedido.setEstado("CANCELADO");
-			pedido.aumentaEstoque();
-			
-			for(int i=0; i<pedido.getItem().size(); i++) {
-				produto = produtoRepository.findById(pedido.getItem().get(i).getProduto().getProdutoId());
-				if (produtoRepository.findById(pedido.getItem().get(i).getProduto().getProdutoId()) == null) 
-					throw new ProdutoInexistenteException();
-				produtoRepository.saveAndFlush(produto);
-			}			
-			return pedidoRepository.saveAndFlush(pedido);
-	}*/
+	}		
+	
 }

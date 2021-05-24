@@ -2,12 +2,17 @@ package com.zacseriano.lanchoneteapi.models.produto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+
+import com.zacseriano.lanchoneteapi.models.item.Item;
 
 /**
  * Classe que implementa o model/entidade Produto
@@ -32,6 +37,9 @@ public class Produto implements Serializable{
 	
 	@NotNull(message="O valor não pode estar vazio.")
 	private BigDecimal valorUnitario;
+	
+	@OneToMany(mappedBy="produto")
+	private List<Item> itens = new ArrayList<Item>();
 	
 	public Produto(){
 		
@@ -77,6 +85,18 @@ public class Produto implements Serializable{
 		this.valorUnitario = valorUnitario;
 	}
 	
+	public List<Item> getItens() {
+		return itens;
+	}
+
+	public void setItens(List<Item> itens) {
+		this.itens = itens;
+	}
+	
+	public void addItem(Item item) {
+		this.itens.add(item);
+	}
+
 	/**
 	 * Método que verifica se a quantidade solicitada é suportada pelo estoque, retornando true, caso o estoque supra 
 	 * a demanda, e retorna false caso o estoque não supra a demanda

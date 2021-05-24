@@ -27,6 +27,7 @@ import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
+import com.zacseriano.lanchoneteapi.resources.dto.ProdutoDtoGestor;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -62,8 +63,9 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Lista todos os produtos para o gestor.")
 	@GetMapping("/gerenciarProduto")
-	public List<Produto> listaProdutos(){
-		return produtoRepository.findAll();
+	public List<ProdutoDtoGestor> listaProdutos(){
+		List<Produto> produtos = produtoRepository.findAll();
+		return ProdutoDtoGestor.converter(produtos);
 	}
 	
 	/**
