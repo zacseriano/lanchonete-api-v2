@@ -1,5 +1,7 @@
 package com.zacseriano.lanchoneteapi.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
@@ -24,5 +26,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 	 * Método para procurar um Pedido pelo seu Cliente.
 	 */
 	Pedido findByCliente(Cliente cliente);
+	
 }
 

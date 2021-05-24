@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +110,9 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Salva um produto único no banco de dados.")
 	@PostMapping("/gerenciarProduto")
-	public ResponseEntity<ProdutoDtoGestor> cadastraProduto(@RequestBody @Valid Produto produto) {
-		
+	@Transactional
+	public ResponseEntity<ProdutoDtoGestor> cadastraProduto(@Valid @RequestBody Produto produto) {
+
 		Produto consultaProduto = produtoRepository.findByNome(produto.getNome());
 		if (consultaProduto != null) throw new ProdutoExistenteException();			
 		produtoRepository.save(produto);
@@ -136,7 +138,7 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Deleta um produto, encontrado pelo seu Id.")
 	@DeleteMapping("/gerenciarProduto")
-	public void deletaProduto(@RequestBody @Valid long produtoId) {
+	public void deletaProduto(@Valid @RequestBody long produtoId) {
 		if (produtoRepository.findById(produtoId) == null) throw new ProdutoInexistenteException();
 		produtoRepository.delete(produtoRepository.findById(produtoId));
 	}
@@ -155,7 +157,8 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Atualiza um produto.")
 	@PutMapping("/gerenciarProduto/{id}")
-	public ResponseEntity<ProdutoDtoGestor> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoProdutoForm form) {
+	@Transactional
+	public ResponseEntity<ProdutoDtoGestor> atualizar(@PathVariable Long id, @Valid @RequestBody AtualizacaoProdutoForm form) {
 		Optional<Produto> optional = produtoRepository.findById(id);
 		if (optional.isPresent()) {
 			Produto produto = form.atualizar(id, produtoRepository);
@@ -184,6 +187,18 @@ public class GestorResource {
 		return PedidoDto.converter(pedidos);
 	}
 	
+	@ApiOperation(value="Lista um pedido para o cliente.")
+	@GetMapping("/gerenciarPedido/{id}")
+	public ResponseEntity<PedidoDto> listaPedido(@PathVariable Long id) {
+
+		Optional<Pedido> pedido = pedidoRepository.findById(id);
+		if (pedido.isPresent()) {
+			return ResponseEntity.ok(new PedidoDto(pedido.get()));
+		}
+		
+		return ResponseEntity.notFound().build();
+	}
+	
 	/**
 	 * Método que recebe um ID de pedido e um estado, atualiza o pedido vinculado a esse ID com o novo estado,
 	 * ocorre uma verificação se o Produto existe, gerando uma possível possível exceção.
@@ -199,7 +214,8 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Atualiza o estado de um pedido.")
 	@PutMapping("/gerenciarPedido/{id}")
-	public ResponseEntity<PedidoDto> atualizaEstado(@PathVariable Long id, @RequestBody @Valid AtualizacaoPedidoForm form) {
+	@Transactional
+	public ResponseEntity<PedidoDto> atualizaEstado(@PathVariable Long id, @Valid @RequestBody AtualizacaoPedidoForm form) {
 		
 		Optional<Pedido> optional = pedidoRepository.findById(id);
 		if (optional.isPresent()) {

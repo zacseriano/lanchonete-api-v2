@@ -1,8 +1,11 @@
 package com.zacseriano.lanchoneteapi.models.pedido;
 
+import javax.validation.constraints.NotNull;
+
 import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 
 public class AtualizacaoPedidoForm {
+	@NotNull
 	private Estado estado;
 
 	public Estado getEstado() {

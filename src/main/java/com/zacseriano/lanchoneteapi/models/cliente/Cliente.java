@@ -7,7 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -22,20 +24,19 @@ import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 public class Cliente implements Serializable{	
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message="O nome do Cliente não pode estar vazio.")
+	@NotBlank @Size(min = 4, max = 20)
 	private String nome;
 	
-	@NotNull(message="A Data de Nascimento do Cliente não pode estar vazia.")
+	@NotBlank @Size(min = 4, max = 9)
 	private String dataNascimento;
 	
-	@NotNull(message="O Telefone do Cliente não pode estar vazio.")
+	@NotBlank @Size(min = 9, max = 12)
 	private String telefone;
 	
-	@Id
-	@NotNull(message="O email do Cliente não pode estar vazio.")
+	@Id	@Email
 	private String email;
 	
-	@NotNull(message="A senha do Cliente não pode estar vazia.")
+	@NotBlank @Size(min = 6)
 	private String senha;
 	
 	@ManyToOne

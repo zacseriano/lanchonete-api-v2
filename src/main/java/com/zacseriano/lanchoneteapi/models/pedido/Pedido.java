@@ -27,15 +27,14 @@ public class Pedido implements Serializable{
 	@Id	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;		
 	
-	@NotNull(message="Selecione um item.")
+	@NotNull
 	@OneToMany(mappedBy = "pedido")
 	private List<Item> item;
 	
-	@NotNull(message="Cliente não-vinculado")
+	@NotNull
 	@ManyToOne
 	private Cliente cliente;
 	
-	@NotNull(message="Total não-calculado.")
 	private BigDecimal total;
 	
 	private Estado estado = Estado.EM_ANÁLISE;

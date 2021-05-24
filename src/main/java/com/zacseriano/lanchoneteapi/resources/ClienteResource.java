@@ -2,6 +2,7 @@ package com.zacseriano.lanchoneteapi.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -17,17 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.zacseriano.lanchoneteapi.exceptions.ClienteInexistenteException;
-import com.zacseriano.lanchoneteapi.exceptions.PedidoInexistenteException;
-import com.zacseriano.lanchoneteapi.exceptions.ProdutoInexistenteException;
-import com.zacseriano.lanchoneteapi.exceptions.SemEstoqueException;
-import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.item.AdicionarItemForm;
-import com.zacseriano.lanchoneteapi.models.item.Item;
 import com.zacseriano.lanchoneteapi.models.item.PrimeiroItemForm;
 import com.zacseriano.lanchoneteapi.models.pedido.CancelarPedidoForm;
+import com.zacseriano.lanchoneteapi.models.pedido.ListaPedidoForm;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
-import com.zacseriano.lanchoneteapi.models.pedido.PedidoForm;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.ItemRepository;
@@ -57,25 +52,6 @@ public class ClienteResource {
 	ItemRepository itemRepository;
 	
 	/**
-	 * Método que lista todos os produtos para o cliente.
-	 * 
-	 * HTTP Status:
-	 * 
-	 * 200 - OK: Tudo ocorreu como esperado
-	 * 400 - Bad Request: A requisição não foi aceita, algum campo está faltando
-	 * 401 - Unauthorized: Chave da API inválida
-	 * 403 - Forbidden: A chave da API não tem permissão para fazer a requisição
-	 * 404 - Not Found: O recurso requisitado não existe
-	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
-	 */
-	@ApiOperation(value="Lista todos os produtos para o cliente.")
-	@GetMapping("/solicitarPedido")
-	public List<ProdutoDto> listaProdutos(){
-		List<Produto> produtos = produtoRepository.findAll();
-		return ProdutoDto.converter(produtos);
-	}
-	
-	/**
 	 * Método que lista os pedidos para o cliente.
 	 * 
 	 * HTTP Status:
@@ -88,9 +64,9 @@ public class ClienteResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Lista todos os produtos para o cliente.")
-	@GetMapping("/consultarPedido")
-	public List<PedidoDto> listaPedidos(){
-		List<Pedido> pedidos = pedidoRepository.findAll();
+	@PostMapping("/gerenciarPedido")
+	public List<PedidoDto> listaPedidos(@RequestBody @Valid ListaPedidoForm form){
+		List<Pedido> pedidos = clienteRepository.findByEmail(form.getEmail()).getPedido();
 		return PedidoDto.converter(pedidos);
 	}
 
@@ -109,11 +85,35 @@ public class ClienteResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Lista um pedido para o cliente.")
-	@GetMapping("gerenciarPedido/{id}")
-	public Pedido listaPedido(@PathVariable(value="id")long id){
-		if (pedidoRepository.findById(id) == null) throw new PedidoInexistenteException();	
-		return pedidoRepository.findById(id);
+	@GetMapping("/gerenciarPedido/{id}")
+	public ResponseEntity<PedidoDto> listaProdutos(@PathVariable Long id) {
+
+		Optional<Pedido> pedido = pedidoRepository.findById(id);
+		if (pedido.isPresent()) {
+			return ResponseEntity.ok(new PedidoDto(pedido.get()));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
+	
+	/**
+	 * Método que lista todos os produtos para o cliente.
+	 * 
+	 * HTTP Status:
+	 * 
+	 * 200 - OK: Tudo ocorreu como esperado
+	 * 400 - Bad Request: A requisição não foi aceita, algum campo está faltando
+	 * 401 - Unauthorized: Chave da API inválida
+	 * 403 - Forbidden: A chave da API não tem permissão para fazer a requisição
+	 * 404 - Not Found: O recurso requisitado não existe
+	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
+	 */
+	@ApiOperation(value="Lista todos os produtos para o cliente.")
+	@GetMapping("/solicitarPedido")
+	public List<ProdutoDto> listaProdutos(){
+		List<Produto> produtos = produtoRepository.findAll();
+		return ProdutoDto.converter(produtos);
+	}		
 	
 	/**
 	 * Método que cria um pedido vinculado a um cliente, e faz a seleção do primeiro item desse pedido, contendo Id do produto e a 

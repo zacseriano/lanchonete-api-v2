@@ -2,12 +2,20 @@ package com.zacseriano.lanchoneteapi.models.produto;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
 
 public class AtualizacaoProdutoForm {
+	@NotBlank @Size(min = 4, max = 20)
 	private String nome;
+	@NotNull
 	private BigDecimal valor;
+	@NotNull
 	private BigDecimal estoque;
+	@NotNull
 	private Categoria categoria;
 	
 	public String getNome() {

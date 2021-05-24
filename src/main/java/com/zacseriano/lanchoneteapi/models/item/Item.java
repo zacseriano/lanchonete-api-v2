@@ -27,11 +27,11 @@ public class Item implements Serializable{
 	@Id	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
-	@NotNull(message="O nome não pode estar vazio.")
+	@NotNull
 	@ManyToOne
 	private Produto produto;
 	
-	@NotNull(message="A quantidade não pode estar vazia.")
+	@NotNull
 	private BigDecimal quantidade;
 	
 	private BigDecimal valorItem;

@@ -2,7 +2,7 @@ package com.zacseriano.lanchoneteapi.models.pedido;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
 
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.item.Item;
@@ -11,7 +11,7 @@ import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 
 public class CancelarPedidoForm {
 	
-	@NotNull(message="O email do Cliente não pode estar vazio.")
+	@Email
 	private String clienteEmail;
 	
 	public String getClienteEmail() {

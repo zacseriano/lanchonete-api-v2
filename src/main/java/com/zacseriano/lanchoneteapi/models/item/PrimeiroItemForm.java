@@ -2,6 +2,7 @@ package com.zacseriano.lanchoneteapi.models.item;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
@@ -20,13 +21,13 @@ import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
  */
 public class PrimeiroItemForm {
 	
-	@NotNull(message="A quantidade não pode estar vazia.")
+	@NotNull
 	private BigDecimal quantidade;
 	
-	@NotNull(message="O Id do Produto não pode estar vazio.")
+	@NotNull
 	private long produtoId;
 	
-	@NotNull(message="O email do Cliente não pode estar vazio.")
+	@Email
 	private String clienteEmail;
 	
 	public BigDecimal getQuantidade() {

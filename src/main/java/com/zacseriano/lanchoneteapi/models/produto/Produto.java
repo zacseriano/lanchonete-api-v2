@@ -10,7 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.zacseriano.lanchoneteapi.models.item.Item;
 
@@ -22,20 +24,19 @@ public class Produto implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Id	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long produtoId;
 	
-	@NotNull(message="O nome não pode estar vazio.")
+	@NotBlank @Size(min = 4, max = 20)
 	private String nome;
 	
-	@NotNull(message="A categoria não pode estar vazia.")
+	@NotNull
 	private Categoria categoria;
 	
-	@NotNull(message="O estoque não pode estar vazio.")
+	@NotNull
 	private BigDecimal estoque;
 	
-	@NotNull(message="O valor não pode estar vazio.")
+	@NotNull
 	private BigDecimal valorUnitario;
 	
 	@OneToMany(mappedBy="produto")
