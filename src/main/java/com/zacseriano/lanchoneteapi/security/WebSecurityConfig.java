@@ -60,11 +60,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	/*
 	 * Configurando a autorização de todas as URLs da API
 	 */
+	
+	//ENDPOINTS DE CLIENTE E GESTOR LIBERADOS PARA TESTE E FASE DE REIMPLEMENTAÇÃO DE SEGURANÇA
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf().disable().authorizeRequests()
-		.antMatchers("/cliente/**").permitAll()
-		.antMatchers("/gestor/**").permitAll()
+		.antMatchers("/cliente/**").permitAll()//LIBERADO PROVISORIAMENTE
+		.antMatchers("/gestor/**").permitAll()//LIBERADO PROVISORIAMENTE
 		.antMatchers(AUTH_WHITELIST).permitAll()  
 		.antMatchers(HttpMethod.POST, "/cadastrarCliente").permitAll()
 		.antMatchers(HttpMethod.POST, "/cadastrarGestor").permitAll()

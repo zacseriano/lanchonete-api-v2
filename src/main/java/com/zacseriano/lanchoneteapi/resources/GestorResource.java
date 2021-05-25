@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.zacseriano.lanchoneteapi.exceptions.ProdutoExistenteException;
-import com.zacseriano.lanchoneteapi.exceptions.ProdutoInexistenteException;
+import com.zacseriano.lanchoneteapi.exceptions.produto.ProdutoExistenteException;
+import com.zacseriano.lanchoneteapi.exceptions.produto.ProdutoInexistenteException;
 import com.zacseriano.lanchoneteapi.models.pedido.AtualizacaoPedidoForm;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.AtualizacaoProdutoForm;
@@ -29,7 +29,7 @@ import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
-import com.zacseriano.lanchoneteapi.resources.dto.PedidoDto;
+import com.zacseriano.lanchoneteapi.resources.dto.PedidoDtoGestor;
 import com.zacseriano.lanchoneteapi.resources.dto.ProdutoDtoGestor;
 
 import io.swagger.annotations.ApiOperation;
@@ -138,6 +138,7 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Deleta um produto, encontrado pelo seu Id.")
 	@DeleteMapping("/gerenciarProduto")
+	@Transactional
 	public void deletaProduto(@Valid @RequestBody long produtoId) {
 		if (produtoRepository.findById(produtoId) == null) throw new ProdutoInexistenteException();
 		produtoRepository.delete(produtoRepository.findById(produtoId));
@@ -182,18 +183,18 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Lista todos os pedidos existentes para o gestor.")
 	@GetMapping("/gerenciarPedido")
-	public List<PedidoDto> listaPedidos(){
+	public List<PedidoDtoGestor> listaPedidos(){
 		List<Pedido> pedidos = pedidoRepository.findAll();
-		return PedidoDto.converter(pedidos);
+		return PedidoDtoGestor.converter(pedidos);
 	}
 	
-	@ApiOperation(value="Lista um pedido para o cliente.")
+	@ApiOperation(value="Lista um pedido para o gestor.")
 	@GetMapping("/gerenciarPedido/{id}")
-	public ResponseEntity<PedidoDto> listaPedido(@PathVariable Long id) {
+	public ResponseEntity<PedidoDtoGestor> listaPedido(@PathVariable Long id) {
 
 		Optional<Pedido> pedido = pedidoRepository.findById(id);
 		if (pedido.isPresent()) {
-			return ResponseEntity.ok(new PedidoDto(pedido.get()));
+			return ResponseEntity.ok(new PedidoDtoGestor(pedido.get()));
 		}
 		
 		return ResponseEntity.notFound().build();
@@ -215,12 +216,12 @@ public class GestorResource {
 	@ApiOperation(value="Atualiza o estado de um pedido.")
 	@PutMapping("/gerenciarPedido/{id}")
 	@Transactional
-	public ResponseEntity<PedidoDto> atualizaEstado(@PathVariable Long id, @Valid @RequestBody AtualizacaoPedidoForm form) {
+	public ResponseEntity<PedidoDtoGestor> atualizaEstado(@PathVariable Long id, @Valid @RequestBody AtualizacaoPedidoForm form) {
 		
 		Optional<Pedido> optional = pedidoRepository.findById(id);
 		if (optional.isPresent()) {
 			Pedido pedido = form.atualizar(id, pedidoRepository);
-			return ResponseEntity.ok(new PedidoDto(pedido));
+			return ResponseEntity.ok(new PedidoDtoGestor(pedido));
 			
 		}
 		

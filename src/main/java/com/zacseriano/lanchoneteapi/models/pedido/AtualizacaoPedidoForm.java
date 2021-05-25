@@ -2,7 +2,7 @@ package com.zacseriano.lanchoneteapi.models.pedido;
 
 import javax.validation.constraints.NotNull;
 
-import com.zacseriano.lanchoneteapi.exceptions.NovoEstadoInvalidoException;
+import com.zacseriano.lanchoneteapi.exceptions.pedido.NovoEstadoInvalidoException;
 import com.zacseriano.lanchoneteapi.repositories.PedidoRepository;
 
 public class AtualizacaoPedidoForm {

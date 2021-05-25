@@ -1,6 +1,8 @@
 package com.zacseriano.lanchoneteapi.models.cliente;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -11,6 +13,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.zacseriano.lanchoneteapi.models.gestor.Gestor;
@@ -21,7 +26,7 @@ import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
  * Classe que implementa o model/entidade Cliente
  */
 @Entity
-public class Cliente implements Serializable{	
+public class Cliente implements UserDetails, Serializable{	
 	private static final long serialVersionUID = 1L;
 
 	@NotBlank @Size(min = 4, max = 20)
@@ -167,6 +172,51 @@ public class Cliente implements Serializable{
 				return this.pedido.get(i);						
 		}
 		return null;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+
+		final List<SimpleGrantedAuthority> authorities = new LinkedList<>();
+	            authorities.add(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+	 
+	        return authorities;
+	}
+
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 		
 }

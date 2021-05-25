@@ -1,5 +1,6 @@
 package com.zacseriano.lanchoneteapi.resources;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.zacseriano.lanchoneteapi.auth.AuthForm;
 import com.zacseriano.lanchoneteapi.auth.AuthenticationResponse;
-import com.zacseriano.lanchoneteapi.exceptions.ClienteExistenteException;
-import com.zacseriano.lanchoneteapi.exceptions.GestorExistenteException;
+import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteExistenteException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.gestor.Gestor;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
@@ -94,12 +95,19 @@ public class AuthenticateResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Recebe as credenciais, cadastra um gestor e permite apenas uma entrada")
-	@RequestMapping(value="/cadastrarGestor", method=RequestMethod.POST)
-	public Gestor cadastrarGestor(@RequestBody @Valid Gestor gestor) {
-		if(gestorRepository.findByEmail(gestor.getEmail()) != null) throw new GestorExistenteException();
-		return gestorRepository.save(gestor);				
-	}
+	@RequestMapping(value="/cadastarGestor", method=RequestMethod.POST)
+	@Transactional
+	public ResponseEntity<Gestor> cadastrarGestor(@RequestBody @Valid Gestor gestor) {
+		
+		if(gestorRepository.findAll() != null) { 
+			return ResponseEntity.notFound().build();
+		
+		} else {
+			gestorRepository.save(gestor);
+			return ResponseEntity.created(null).build();
 	
+		}
+	}	
 	/**
 	 * Método que recebe as credenciais e cadastra um cliente, caso o seu email não exista no banco de dados
 	 * 
@@ -114,9 +122,9 @@ public class AuthenticateResource {
 	 */
 	@ApiOperation(value="Recebe as credenciais e cadastra um cliente")
 	@RequestMapping(value="/cadastrarCliente", method=RequestMethod.POST)
-	public Cliente cadastrarCliente(@RequestBody @Valid Cliente cliente) {
-		if(clienteRepository.findByEmail(cliente.getEmail()) != null) throw new ClienteExistenteException();
-		return clienteRepository.save(cliente);				
+	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody @Valid Cliente cliente, UriComponentsBuilder uriBuilder) {
+		if(clienteRepository.findByEmail(cliente.getEmail()) != null) throw new ClienteExistenteException();		
+		return ResponseEntity.created(null).build();				
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.zacseriano.lanchoneteapi.exceptions;
+package com.zacseriano.lanchoneteapi.exceptions.cliente;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,7 +11,7 @@ public class ClienteExistenteException extends RuntimeException {
 	private static final long serialVersionUID = 6648725043534411041L;
 
 	public ClienteExistenteException() {
-		super("Cliente já cadastrado.");
+		super("Cliente com estas credenciais já cadastrado, favor contactar o suporte para recuperar a senha.");
 	}
 
 	public ClienteExistenteException(String msg, Throwable t) {
