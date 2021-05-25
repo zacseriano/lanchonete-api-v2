@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import com.zacseriano.lanchoneteapi.exceptions.PedidoExistenteException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
@@ -49,6 +50,10 @@ public class PrimeiroItemForm {
 		this.clienteEmail = clienteEmail;
 	}
 	public Pedido converter(ProdutoRepository produtoRepository, ItemRepository itemRepository, ClienteRepository clienteRepository) {
+		
+		Cliente cliente = clienteRepository.findByEmail(clienteEmail);
+		if(cliente.acharPedidoAberto() != null) throw new PedidoExistenteException();
+		
 		Produto produto = produtoRepository.findById(produtoId);
 		produto.diminuiEstoque(quantidade);
 		
@@ -56,8 +61,6 @@ public class PrimeiroItemForm {
 		item.defineValorItem();
 		produto.addItem(item);
 		itemRepository.save(item);
-		
-		Cliente cliente = clienteRepository.findByEmail(clienteEmail);
 		
 		Pedido pedido = new Pedido(cliente, item);
 		item.setPedido(pedido);

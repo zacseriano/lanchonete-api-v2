@@ -4,7 +4,7 @@ import javax.validation.constraints.Email;
 
 public class ListaPedidoForm {
 	
-	//@Email
+	@Email
 	private String email;
 
 	public String getEmail() {
