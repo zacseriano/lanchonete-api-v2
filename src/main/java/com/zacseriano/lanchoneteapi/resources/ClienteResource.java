@@ -70,7 +70,7 @@ public class ClienteResource {
 	 */
 	// É PRA SER UM MÉTODO GET, SÓ QUE VOCE PASSA QUAL O SEU EMAIL, AINDA É NECESSÁRIO FAZER UM CONTROLE NESSA PARTE PRA QUE 
 	//NEM TODOS OS CLIENTES CONSIGAM VER UM A LISTA DO OUTRO E ETC
-	@ApiOperation(value="Lista todos os produtos para o cliente.")
+	@ApiOperation(value="Lista todos os pedidos para o cliente.")
 	@PostMapping("/gerenciarPedido")
 	public List<PedidoDto> listaPedidos(@RequestBody @Valid ListaPedidoForm form){
 		List<Pedido> pedidos = clienteRepository.findByEmail(form.getEmail()).getPedido();

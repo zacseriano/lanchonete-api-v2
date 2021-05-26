@@ -1,5 +1,7 @@
 package com.zacseriano.lanchoneteapi.resources;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -11,10 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.zacseriano.lanchoneteapi.auth.AuthForm;
 import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteExistenteException;
@@ -70,8 +69,9 @@ public class AuthenticateResource {
 			String token;
 			if(form.verificarGestor(gestorRepository))
 				token = tokenService.gerarTokenGestor(authentication);
-			token = tokenService.gerarTokenCliente(authentication);
-			
+			else {
+				token = tokenService.gerarTokenCliente(authentication);
+			}						
 			
 			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch (AuthenticationException e) {
@@ -93,17 +93,18 @@ public class AuthenticateResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Recebe as credenciais, cadastra um gestor e permite apenas uma entrada")
-	@RequestMapping(value="/cadastarGestor", method=RequestMethod.POST)
+	@PostMapping(value="/cadastrarGestor")
 	@Transactional
-	public ResponseEntity<Gestor> cadastrarGestor(@RequestBody @Valid Gestor gestor) {
+	public ResponseEntity<Gestor> cadastrarGestor(@RequestBody Gestor gestor) {
 		
-		if(gestorRepository.findAll() != null) { 
-			return ResponseEntity.notFound().build();
 		
-		} else {
+		List<Gestor> validando = gestorRepository.findAll();
+		if(validando.isEmpty()) {
 			gestorRepository.save(gestor);
 			return ResponseEntity.created(null).build();
-	
+		
+		} else {
+			return ResponseEntity.notFound().build();	
 		}
 	}	
 	/**
@@ -120,9 +121,10 @@ public class AuthenticateResource {
 	 */
 	@ApiOperation(value="Recebe as credenciais e cadastra um cliente")
 	@PostMapping(value="/cadastrarCliente")
-	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody @Valid Cliente cliente, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody @Valid Cliente cliente) {
 		if(clienteRepository.findByEmail(cliente.getEmail()) != null) throw new ClienteExistenteException();
-		clienteRepository.save(cliente);
+		
+		clienteRepository.save(new Cliente(cliente, gestorRepository));
 		
 		return ResponseEntity.created(null).build();				
 	}

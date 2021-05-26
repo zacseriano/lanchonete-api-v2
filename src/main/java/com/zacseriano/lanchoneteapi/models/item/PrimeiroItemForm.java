@@ -3,10 +3,12 @@ package com.zacseriano.lanchoneteapi.models.item;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteInexistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.pedido.PedidoExistenteException;
+import com.zacseriano.lanchoneteapi.exceptions.produto.ProdutoInexistenteException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
@@ -23,7 +25,7 @@ import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
  */
 public class PrimeiroItemForm {
 	
-	@NotNull
+	@NotNull @Min(value= 1)
 	private BigDecimal quantidade;
 	
 	@NotNull
@@ -57,6 +59,7 @@ public class PrimeiroItemForm {
 		if(cliente.acharPedidoAberto() != null) throw new PedidoExistenteException();
 		
 		Produto produto = produtoRepository.findById(produtoId);
+		if(produto == null) throw new ProdutoInexistenteException();
 		produto.diminuiEstoque(quantidade);
 		
 		Item item = new Item(produto, quantidade);

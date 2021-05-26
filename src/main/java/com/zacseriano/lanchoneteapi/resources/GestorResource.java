@@ -8,6 +8,10 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.zacseriano.lanchoneteapi.exceptions.produto.ProdutoExistenteException;
 import com.zacseriano.lanchoneteapi.exceptions.produto.ProdutoInexistenteException;
 import com.zacseriano.lanchoneteapi.models.pedido.AtualizacaoPedidoForm;
+import com.zacseriano.lanchoneteapi.models.pedido.ListaPedidoForm;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
 import com.zacseriano.lanchoneteapi.models.produto.AtualizacaoProdutoForm;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
@@ -66,8 +71,8 @@ public class GestorResource {
 	 */
 	@ApiOperation(value="Lista todos os produtos para o gestor.")
 	@GetMapping("/gerenciarProduto")
-	public List<ProdutoDtoGestor> listaProdutos(){
-		List<Produto> produtos = produtoRepository.findAll();
+	public Page<ProdutoDtoGestor> listaProdutos(@PageableDefault(sort = "categoria", direction = Direction.ASC, page = 0, size = 20) Pageable paginacao){
+		Page<Produto> produtos = produtoRepository.findAll(paginacao);
 		return ProdutoDtoGestor.converter(produtos);
 	}
 	
@@ -198,6 +203,13 @@ public class GestorResource {
 		}
 		
 		return ResponseEntity.notFound().build();
+	}
+	
+	@ApiOperation(value="Lista todos os pedidos para o cliente.")
+	@PostMapping("/gerenciarPedido")
+	public List<PedidoDtoGestor> listaPedidosClienteUnico(@RequestBody @Valid ListaPedidoForm form){
+		List<Pedido> pedidos = clienteRepository.findByEmail(form.getEmail()).getPedido();
+		return PedidoDtoGestor.converter(pedidos);
 	}
 	
 	/**

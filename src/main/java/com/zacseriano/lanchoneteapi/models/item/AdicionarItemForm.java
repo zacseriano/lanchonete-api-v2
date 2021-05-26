@@ -3,6 +3,7 @@ package com.zacseriano.lanchoneteapi.models.item;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteInexistenteException;
@@ -17,7 +18,7 @@ import com.zacseriano.lanchoneteapi.repositories.ProdutoRepository;
 
 public class AdicionarItemForm {
 	
-	@NotNull
+	@NotNull @Min(value= 1)
 	private BigDecimal quantidade;
 	
 	@NotNull

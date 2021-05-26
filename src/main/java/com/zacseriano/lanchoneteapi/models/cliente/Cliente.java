@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.zacseriano.lanchoneteapi.models.gestor.Gestor;
 import com.zacseriano.lanchoneteapi.models.pedido.Estado;
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
+import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 
 /**
  * Classe que implementa o model/entidade Cliente
@@ -54,6 +55,15 @@ public class Cliente implements UserDetails, Serializable{
 		
 	}
 		
+	public Cliente(Cliente cliente, GestorRepository repository) {
+		this.nome = cliente.getNome();
+		this.dataNascimento = cliente.getDataNascimento();
+		this.telefone = cliente.getTelefone();
+		this.email = cliente.getEmail();
+		this.senha = cliente.getSenha();
+		this.gestor = repository.findAll().get(0);
+	}
+
 	public String getNome() {
 		return nome;
 	}

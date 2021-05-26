@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.constraints.Email;
 
+import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteInexistenteException;
+import com.zacseriano.lanchoneteapi.exceptions.pedido.PedidoInexistenteException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.item.Item;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
@@ -23,8 +25,11 @@ public class CancelarPedidoForm {
 	public Pedido converter(ClienteRepository clienteRepository, PedidoRepository pedidoRepository) {
 		
 		Cliente cliente = clienteRepository.findByEmail(clienteEmail);
+		if(cliente == null) throw new ClienteInexistenteException();
 		
 		Pedido pedido = cliente.acharPedidoAberto();
+		if(pedido == null) throw new PedidoInexistenteException();		
+		
 		pedido.setEstado(Estado.CANCELADO);
 		
 		List <Item> itens = pedido.getItem();

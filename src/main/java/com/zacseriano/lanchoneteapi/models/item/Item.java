@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.zacseriano.lanchoneteapi.models.pedido.Pedido;
@@ -31,7 +32,7 @@ public class Item implements Serializable{
 	@ManyToOne
 	private Produto produto;
 	
-	@NotNull
+	@NotNull @Min(value= 1)
 	private BigDecimal quantidade;
 	
 	private BigDecimal valorItem;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,12 @@ public class JwtUtil {
 	
 	/**
 	 * Campo do segredo que estará na última parte do JWT
-	 */
-    private String SECRET_KEY = "XQtM^(gqO_UD\"$2o?W<';@F8GADRft";
+	 */	
+	@Value("${lanchoneteapi.jwt.secret}")
+    private String SECRET_KEY;
+	
+	@Value("${lanchoneteapi.jwt.expiration}")
+	private String expiration;
     
     /**
 	 * Método que extrai o username e insere no claim
@@ -72,10 +77,10 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder()
-        		.setIssuer("Jamba Lanches API")
+        		.setIssuer("API Rest para Lanchonete")
         		.setClaims(claims)
         		.setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis()+ Long.parseLong(expiration)))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
     

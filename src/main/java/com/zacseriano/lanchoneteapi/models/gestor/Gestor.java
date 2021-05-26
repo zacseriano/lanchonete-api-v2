@@ -1,6 +1,7 @@
 package com.zacseriano.lanchoneteapi.models.gestor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,11 +33,11 @@ public class Gestor implements UserDetails, Serializable{
 	@Id @Email
 	private String email;
 	
-	@NotBlank @Size(min = 6, max = 20)
+	@NotBlank @Size(min = 6)
 	private String senha;
 	
 	@OneToMany(mappedBy = "gestor")
-	private List<Cliente>clientes;
+	private List<Cliente>clientes = new ArrayList<Cliente>();
 	
 	public Gestor() {
 		
@@ -45,10 +46,9 @@ public class Gestor implements UserDetails, Serializable{
 	/**
 	 * Método que lista dos Pedidos relacionados a cada Cliente presentae na lista de Clientes presente no objeto Gestor 
  	 */ 
-	@SuppressWarnings("null")
 	public List<Pedido> listarPedidos(){		
 	
-		List<Pedido> pedidos = null;
+		List<Pedido> pedidos = new ArrayList<Pedido>();
 		for(int i=0; i<this.clientes.size(); i++) 
 			pedidos.addAll(this.clientes.get(i).getPedido());
 		

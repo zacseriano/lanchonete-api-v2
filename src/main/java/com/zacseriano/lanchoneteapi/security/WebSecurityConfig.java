@@ -65,8 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception{
 		httpSecurity.csrf().disable().authorizeRequests()
-		.antMatchers("/cliente/**").permitAll()//LIBERADO PROVISORIAMENTE
-		.antMatchers("/gestor/**").permitAll()//LIBERADO PROVISORIAMENTE
+		.antMatchers("/cliente/**").hasRole("CLIENTE")
+		.antMatchers("/gestor/**").hasRole("GESTOR")
 		.antMatchers(AUTH_WHITELIST).permitAll()  
 		.antMatchers(HttpMethod.POST, "/cadastrarCliente").permitAll()
 		.antMatchers(HttpMethod.POST, "/cadastrarGestor").permitAll()

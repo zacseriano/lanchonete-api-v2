@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+
 import com.zacseriano.lanchoneteapi.models.produto.Categoria;
 import com.zacseriano.lanchoneteapi.models.produto.Produto;
 
@@ -54,6 +56,9 @@ public class ProdutoDtoGestor {
 	public static List<ProdutoDtoGestor> converter(List<Produto> produtos) {
 		return produtos.stream().map(ProdutoDtoGestor::new).collect(Collectors.toList());
 	}
-
+	
+	public static Page<ProdutoDtoGestor> converter(Page<Produto> produtos) {
+		return produtos.map(ProdutoDtoGestor::new);
+	}
 }
 
