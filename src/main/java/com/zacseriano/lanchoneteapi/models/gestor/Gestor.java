@@ -32,7 +32,7 @@ public class Gestor implements UserDetails, Serializable{
 	@Id @Email
 	private String email;
 	
-	@NotBlank @Size(min = 6)
+	@NotBlank @Size(min = 6, max = 20)
 	private String senha;
 	
 	@OneToMany(mappedBy = "gestor")
@@ -105,37 +105,31 @@ public class Gestor implements UserDetails, Serializable{
 	
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
 		return this.senha;
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
 		return this.email;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 }

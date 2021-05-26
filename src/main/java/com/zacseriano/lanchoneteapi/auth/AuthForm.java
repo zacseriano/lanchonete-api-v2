@@ -2,6 +2,8 @@ package com.zacseriano.lanchoneteapi.auth;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 /*
  * Classe que é implementada com dois campos, passando email e senha como informações para o formulário usado
  * nos seguintes métodos dos endpoints:
@@ -32,5 +34,8 @@ public class AuthForm {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
-
+	
+	public UsernamePasswordAuthenticationToken converter() {
+		return new UsernamePasswordAuthenticationToken(email, senha);
+	}
 }

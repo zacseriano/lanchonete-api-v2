@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +28,8 @@ import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 import com.zacseriano.lanchoneteapi.security.ImplementsUserDetailsService;
 import com.zacseriano.lanchoneteapi.util.JwtUtil;
 
+import br.com.alura.forum.config.security.TokenService;
+import br.com.alura.forum.controller.dto.TokenDto;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -37,7 +42,7 @@ public class AuthenticateResource {
 	ImplementsUserDetailsService userDetailsService;
 	
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	private AuthenticationManager authManager;
 
 	@Autowired
 	private GestorRepository gestorRepository;
@@ -46,7 +51,7 @@ public class AuthenticateResource {
 	private ClienteRepository clienteRepository;
 	
 	@Autowired
-	private JwtUtil jwtTokenUtil;
+	private TokenService tokenService;
 	
 	/**
 	 * Método que gera tokens válidos de JWT para autorização de Clientes/Gestor na API
@@ -61,24 +66,17 @@ public class AuthenticateResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Recebe as credenciais de login e faz a autenticação/autorização.")
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthForm authForm) throws Exception {
-
+	@PostMapping(value = "/login")
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthForm form){
+		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
+		
 		try {
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authForm.getEmail(), authForm.getSenha())
-			);
+			Authentication authentication = authManager.authenticate(dadosLogin);
+			String token = tokenService.gerarToken(authentication);
+			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+		} catch (AuthenticationException e) {
+			return ResponseEntity.badRequest().build();
 		}
-		catch (BadCredentialsException e) {
-			throw new Exception("Usuario ou senha incorretos", e);
-		}
-
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(authForm.getEmail());
-
-		final String jwt = jwtTokenUtil.generateToken(userDetails);
-
-		return ResponseEntity.ok(new AuthenticationResponse(jwt));
 	}
 	
 	/**
