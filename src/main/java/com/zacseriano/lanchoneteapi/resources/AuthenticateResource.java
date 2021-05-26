@@ -119,9 +119,11 @@ public class AuthenticateResource {
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
 	@ApiOperation(value="Recebe as credenciais e cadastra um cliente")
-	@RequestMapping(value="/cadastrarCliente", method=RequestMethod.POST)
+	@PostMapping(value="/cadastrarCliente")
 	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody @Valid Cliente cliente, UriComponentsBuilder uriBuilder) {
-		if(clienteRepository.findByEmail(cliente.getEmail()) != null) throw new ClienteExistenteException();		
+		if(clienteRepository.findByEmail(cliente.getEmail()) != null) throw new ClienteExistenteException();
+		clienteRepository.save(cliente);
+		
 		return ResponseEntity.created(null).build();				
 	}
 

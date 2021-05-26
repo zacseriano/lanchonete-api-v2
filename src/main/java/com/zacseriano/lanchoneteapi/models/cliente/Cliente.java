@@ -41,7 +41,7 @@ public class Cliente implements UserDetails, Serializable{
 	@Id	@Email
 	private String email;
 	
-	@NotBlank @Size(min = 6)
+	@NotBlank @Size(min = 6)//COMO A SENHA ESTÁ SENDO ENCODADA PELO BCRYPT, O SIZE SEMPRE FICA MAIOR QUE 6
 	private String senha;
 	
 	@ManyToOne
