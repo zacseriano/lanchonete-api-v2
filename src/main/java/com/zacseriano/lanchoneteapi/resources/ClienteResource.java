@@ -8,6 +8,11 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +68,8 @@ public class ClienteResource {
 	 * 404 - Not Found: O recurso requisitado não existe
 	 * 500, 502, 503, 504 - Erros de server: problemas na Java API
 	 */
+	// É PRA SER UM MÉTODO GET, SÓ QUE VOCE PASSA QUAL O SEU EMAIL, AINDA É NECESSÁRIO FAZER UM CONTROLE NESSA PARTE PRA QUE 
+	//NEM TODOS OS CLIENTES CONSIGAM VER UM A LISTA DO OUTRO E ETC
 	@ApiOperation(value="Lista todos os produtos para o cliente.")
 	@PostMapping("/gerenciarPedido")
 	public List<PedidoDto> listaPedidos(@RequestBody @Valid ListaPedidoForm form){
@@ -110,8 +117,9 @@ public class ClienteResource {
 	 */
 	@ApiOperation(value="Lista todos os produtos para o cliente.")
 	@GetMapping("/solicitarPedido")
-	public List<ProdutoDto> listaProdutos(){
-		List<Produto> produtos = produtoRepository.findAll();
+	@Cacheable(value = "listaProdutosCliente")
+	public Page<ProdutoDto> listaProdutos(@PageableDefault(sort = "categoria", direction = Direction.ASC, page = 0, size = 20) Pageable paginacao){
+		Page<Produto> produtos = produtoRepository.findAll(paginacao);
 		return ProdutoDto.converter(produtos);
 	}		
 	

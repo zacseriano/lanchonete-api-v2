@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Classe que implementa a ProdutoExistenteException na API
  */
-@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Cliente já cadastrado.")  // 404
+@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Produto existente.")  // 404
 public class ProdutoExistenteException extends RuntimeException {
 	private static final long serialVersionUID = 6648725043534411041L;
 
 	public ProdutoExistenteException() {
-		super("Produto existente.");
+		super("Produto já existente.");
 	}
 
 	public ProdutoExistenteException(String msg, Throwable t) {

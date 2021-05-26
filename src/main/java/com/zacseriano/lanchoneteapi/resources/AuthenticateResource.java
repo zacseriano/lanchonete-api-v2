@@ -6,11 +6,9 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,17 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.zacseriano.lanchoneteapi.auth.AuthForm;
-import com.zacseriano.lanchoneteapi.auth.AuthenticationResponse;
 import com.zacseriano.lanchoneteapi.exceptions.cliente.ClienteExistenteException;
 import com.zacseriano.lanchoneteapi.models.cliente.Cliente;
 import com.zacseriano.lanchoneteapi.models.gestor.Gestor;
 import com.zacseriano.lanchoneteapi.repositories.ClienteRepository;
 import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
 import com.zacseriano.lanchoneteapi.security.ImplementsUserDetailsService;
-import com.zacseriano.lanchoneteapi.util.JwtUtil;
-
-import br.com.alura.forum.config.security.TokenService;
-import br.com.alura.forum.controller.dto.TokenDto;
+import com.zacseriano.lanchoneteapi.security.TokenDto;
+import com.zacseriano.lanchoneteapi.security.TokenService;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -72,7 +67,12 @@ public class AuthenticateResource {
 		
 		try {
 			Authentication authentication = authManager.authenticate(dadosLogin);
-			String token = tokenService.gerarToken(authentication);
+			String token;
+			if(form.verificarGestor(gestorRepository))
+				token = tokenService.gerarTokenGestor(authentication);
+			token = tokenService.gerarTokenCliente(authentication);
+			
+			
 			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch (AuthenticationException e) {
 			return ResponseEntity.badRequest().build();

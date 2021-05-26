@@ -11,7 +11,7 @@ public class ProdutoInexistenteException extends RuntimeException {
 	private static final long serialVersionUID = 6648725043534411041L;
 
 	public ProdutoInexistenteException() {
-		super("Produto inexistente.");
+		super("Produto desejado não existe com a credencial informada.");
 	}
 
 	public ProdutoInexistenteException(String msg, Throwable t) {

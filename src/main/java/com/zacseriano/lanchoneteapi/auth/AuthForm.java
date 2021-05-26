@@ -4,6 +4,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import com.zacseriano.lanchoneteapi.repositories.GestorRepository;
+
 /*
  * Classe que é implementada com dois campos, passando email e senha como informações para o formulário usado
  * nos seguintes métodos dos endpoints:
@@ -33,6 +35,12 @@ public class AuthForm {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+	
+	public Boolean verificarGestor(GestorRepository gr) {
+		if(gr.findByEmail(this.email) == null)
+			return false;
+		return true;
 	}
 	
 	public UsernamePasswordAuthenticationToken converter() {
