@@ -1,6 +1,6 @@
 # Lanchonete API
 
-![GitHub language count](https://img.shields.io/github/languages/count/zacseriano/lanchoneteapi) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/zacseriano/lanchoneteapi) ![GitHub repo size](https://img.shields.io/github/repo-size/zacseriano/lanchoneteapi) ![GitHub last commit](https://img.shields.io/github/last-commit/zacseriano/lanchoneteapi)
+![GitHub language count](https://img.shields.io/github/languages/count/zacseriano/lanchonete-api-v2) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/zacseriano/lanchonete-api-v2) ![GitHub repo size](https://img.shields.io/github/repo-size/zacseriano/lanchonete-api-v2) ![GitHub last commit](https://img.shields.io/github/last-commit/zacseriano/lanchonete-api-v2)
 
 ## Sobre a API
 
