@@ -3,7 +3,6 @@ package com.zacseriano.lanchoneteapi.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +34,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/v2/api-docs",
-            "/webjars/**"
+            "/webjars/**",
+            "/cadastrarCliente",
+            "/cadastrarGestor",
+            "/login",
+            "/actuator/**"            
     };
 	
 	/* 
@@ -68,9 +71,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		.antMatchers("/cliente/**").hasRole("CLIENTE")
 		.antMatchers("/gestor/**").hasRole("GESTOR")
 		.antMatchers(AUTH_WHITELIST).permitAll()  
-		.antMatchers(HttpMethod.POST, "/cadastrarCliente").permitAll()
-		.antMatchers(HttpMethod.POST, "/cadastrarGestor").permitAll()
-		.antMatchers(HttpMethod.POST, "/login").permitAll()
 		.anyRequest().authenticated().and()
 		.exceptionHandling().and().sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
